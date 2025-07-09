@@ -10,6 +10,7 @@ jobs:
   build:
     strategy:
       fail-fast: false
+      continue-on-error: true
       matrix:
         config:
         - name: Windows
@@ -21,6 +22,14 @@ jobs:
         - name: iOS
           os: macos-latest
           target: iOS
+
+        - name: Android32
+          os: ubuntu-latest
+          target: Android32
+
+        - name: Android64
+          os: ubuntu-latest
+          target: Android64
 
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
