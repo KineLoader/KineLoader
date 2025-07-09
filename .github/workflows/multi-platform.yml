@@ -10,7 +10,6 @@ jobs:
   build:
     strategy:
       fail-fast: false
-      continue-on-error: true
       matrix:
         config:
         - name: Windows
