@@ -43,7 +43,7 @@ void PackManager::savePacks() {
 }
 
 std::filesystem::path PackManager::getPackDir() {
-    return Mod::get()->getConfigDir() / "packs";
+    return Mod::get()->getConfigDir();
 }
 
 size_t PackManager::loadPacks() {

@@ -11,7 +11,7 @@
 using namespace geode::prelude;
 
 struct PackInfo {
-    VersionInfo m_textureldr;
+    VersionInfo m_kineloader;
     std::string m_id;
     std::string m_name;
     VersionInfo m_version;

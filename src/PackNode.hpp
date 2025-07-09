@@ -1,21 +1,20 @@
 #pragma once
 
 #include <Geode/binding/CCMenuItemSpriteExtra.hpp>
+#include <Geode/ui/Popup.hpp>
 #include "Pack.hpp"
-#include <functional>
+#include <memory>
 
 using namespace geode::prelude;
 
-class PackSelectPopup;
-
 class PackNode : public CCNode {
 protected:
-    PackSelectPopup* m_layer;
+    geode::Popup<>* m_layer;
     std::shared_ptr<Pack> m_pack;
     CCScale9Sprite* m_draggingBg;
 
     bool init(
-        PackSelectPopup* layer,
+        geode::Popup<>* layer,
         const std::shared_ptr<Pack>& pack,
         float width
     );
@@ -24,7 +23,7 @@ protected:
 
 public:
     static PackNode* create(
-        PackSelectPopup* layer,
+        geode::Popup<>* layer,
         const std::shared_ptr<Pack>& pack,
         float width
     );

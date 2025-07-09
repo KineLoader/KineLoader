@@ -1,10 +1,10 @@
-#include "../include/TextureLoader.hpp"
+#include "../include/KineLoader.hpp"
 
 #include "PackManager.hpp"
 
 using namespace geode;
 
-namespace ext = geode::texture_loader;
+namespace ext = geode::kine_loader;
 
 template <class>
 struct ToFilterImpl;
@@ -36,10 +36,10 @@ $execute {
     new EventListener(+[](std::vector<ext::Pack>* res) {
         *res = utils::ranges::map<std::vector<ext::Pack>>(PackManager::get()->getAvailablePacks(), convertPack);
         return ListenerResult::Stop;
-    }, ToFilter<ext::impl::EventGetAvailablePacks>("geode.texture-loader/v1/get-available-packs"));
+    }, ToFilter<ext::impl::EventGetAvailablePacks>("oki3ed.kineloader/v1/get-available-packs"));
 
     new EventListener(+[](std::vector<ext::Pack>* res) {
         *res = utils::ranges::map<std::vector<ext::Pack>>(PackManager::get()->getAppliedPacks(), convertPack);
         return ListenerResult::Stop;
-    }, ToFilter<ext::impl::EventGetAppliedPacks>("geode.texture-loader/v1/get-applied-packs"));
+    }, ToFilter<ext::impl::EventGetAppliedPacks>("oki3ed.kineloader/v1/get-applied-packs"));
 }

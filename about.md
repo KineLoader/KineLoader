@@ -1,16 +1,7 @@
-# Texture Loader
+# KineLoader
 
-A texture pack manager for Geode.
+Fork the [Texture Loader](https://github.com/geode-sdk/textureldr) who are trying to be better view [Template Pack](https://github.com/KineLoader/Template-Pack) There you will learn about creating packs and Texture Loader.
 
-The UI for the mod can be accessed in <cg>**Graphics Settings**</c> on desktop and regular <cg>**Settings**</c> on mobile. There you can open the packs folder by clicking on the **Textures** button.
+## Support Happy Textures?
 
-You can **drag** on the small plus icon to move packs from available to applied, and back and forth.
-
-## Adding Packs
-You may add packs by adding folders, zip files or apk files. Press the folder button on the pack select screen to open the directory where you should place the packs.
-
-**On Android** This button doesn't currently work. Manually go place your packs at `/storage/emulated/0/Android/media/com.geode.launcher/game/geode/config/geode.texture-loader/packs/`
-
-## For Pack Creators
-
-We have special features for packs, such as pack icons. Please [read our readme for more information](https://github.com/geode-sdk/textureldr)
+[Happy Textures](https://github.com/Alphalaneous/HappyTextures) works on KineLoader check [wiki](https://github.com/Alphalaneous/HappyTextures/wiki) for better packs!

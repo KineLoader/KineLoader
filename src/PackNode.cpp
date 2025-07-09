@@ -1,13 +1,13 @@
 #include "PackNode.hpp"
-#include <Geode/binding/CCMenuItemToggler.hpp>
+#include <Geode/binding/CCMenuItemSpriteExtra.hpp>
 #include <Geode/ui/LazySprite.hpp>
 #include "PackManager.hpp"
-#include "PackSelectPopup.hpp"
-#include "PackInfoPopup.hpp"
+#include "InfoPopup.hpp"
+#include "SelectPackPopup.hpp"
 #include "DragThingy.hpp"
 
 bool PackNode::init(
-    PackSelectPopup* layer,
+    geode::Popup<>* layer,
     const std::shared_ptr<Pack>& pack,
     float width
 ) {
@@ -31,24 +31,24 @@ bool PackNode::init(
     this->setContentSize({ width, HEIGHT });
 
     auto menu = CCMenu::create();
-    menu->setPosition(menuPosX, HEIGHT / 2);
+    menu->setPosition({0, 0});
     menu->setID("pack-button-menu");
     menu->setContentSize(this->getContentSize());
-    menu->setPosition({0, 0});
 
-	auto logoSize = CCSize { HEIGHT - PADDING * 2, HEIGHT - PADDING * 2 };
-    auto logo = LazySprite::create(logoSize, true);
+    auto logoSize = CCSize { HEIGHT - PADDING * 2, HEIGHT - PADDING * 2 };
+    auto logo = geode::LazySprite::create(logoSize, true);
     logo->setLoadCallback([this, logo, logoSize](Result<> res) {
         if (res.isErr()) {
             logo->CCSprite::initWithFile("noLogo.png"_spr);
-            logo->setOpacity(100);
+            bool transparent = Mod::get()->getSettingValue<bool>("transparency-nologo");
+            logo->setOpacity(transparent ? 100 : 255);
         }
         limitNodeSize(logo, logoSize, 1.f, .1f);
     });
     logo->loadFromFile((pack->getResourcesPath() / "pack.png"));
     logo->setPosition({ SPACE_FOR_LOGO / 2 + PADDING, HEIGHT / 2 });
     this->addChild(logo);
-    
+
     logo->setID("pack-logo");
 
     auto nameLabel = CCLabelBMFont::create(
@@ -64,7 +64,7 @@ bool PackNode::init(
     );
     nameButton->setPosition(
         PADDING + SPACE_FOR_LOGO + nameLabel->getScaledContentSize().width / 2 - menuPosX,
-        0
+        HEIGHT / 2
     );
 
     nameButton->setID("pack-name-button");
@@ -78,12 +78,20 @@ bool PackNode::init(
     DragThingy* dragHandle = DragThingy::create(
         [=, this] {
             m_draggingBg->setVisible(true);
-            m_layer->startDragging(this);
+            if (auto selectLayer = dynamic_cast<SelectPackPopup*>(m_layer)) {
+                selectLayer->startDragging(this);
+            }
         },
-        [=, this] (const CCPoint& offset) { m_layer->moveDrag(offset); },
+        [=, this] (const CCPoint& offset) {
+            if (auto selectLayer = dynamic_cast<SelectPackPopup*>(m_layer)) {
+                selectLayer->moveDrag(offset);
+            }
+        },
         [=, this] {
             m_draggingBg->setVisible(false);
-            m_layer->stopDrag();
+            if (auto selectLayer = dynamic_cast<SelectPackPopup*>(m_layer)) {
+                selectLayer->stopDrag();
+            }
         }
     );
 
@@ -92,10 +100,10 @@ bool PackNode::init(
     }
     else {
         PackInfo packInfo = m_pack->getInfo().value();
-        CCLabelBMFont* extraInfoLabel = CCLabelBMFont::create(fmt::format("{} | {}", packInfo.m_version.toNonVString(), packInfo.m_id).c_str(), "bigFont.fnt");
+        CCLabelBMFont* extraInfoLabel = CCLabelBMFont::create(packInfo.m_version.toNonVString().c_str(), "chatFont.fnt");
         extraInfoLabel->setColor({165, 165, 165});
         extraInfoLabel->limitLabelWidth(125.f, 0.2f, 0.1f);
-        extraInfoLabel->setScale(0.2f);
+        extraInfoLabel->setScale(0.45f);
         extraInfoLabel->setAnchorPoint({0, 0.5f});
         extraInfoLabel->setOpacity(165);
         extraInfoLabel->setPosition({40, 8});
@@ -107,7 +115,7 @@ bool PackNode::init(
         CCLabelBMFont* authorLabel = CCLabelBMFont::create(packInfo.m_authors.at(0).c_str(), "goldFont.fnt");
         authorLabel->limitLabelWidth(125.f, 0.3f, 0.1f);
         authorLabel->setAnchorPoint({0, 0.5f});
-        authorLabel->setPosition({40.2, 16});
+        authorLabel->setPosition({40.2f, 16});
         authorLabel->setZOrder(-1);
         authorLabel->setScale(0.3f);
         authorLabel->setID("author-text");
@@ -116,7 +124,7 @@ bool PackNode::init(
         nameButton->setPosition({40 + nameButton->getContentWidth()/2, this->getContentHeight() - 9.5f});
     }
 
-    applyArrowSpr->setAnchorPoint(ccp(0, 0));
+    applyArrowSpr->setAnchorPoint({0, 0});
     dragHandle->addChild(applyArrowSpr);
     dragHandle->setContentSize(applyArrowSpr->getScaledContentSize());
     dragHandle->setID("apply-pack-button");
@@ -135,25 +143,27 @@ bool PackNode::init(
     m_draggingBg->setPosition({ width / 2.f, HEIGHT / 2.f });
     m_draggingBg->setZOrder(-10);
     m_draggingBg->setVisible(false);
-    
-    this->addChild(m_draggingBg);
 
+    this->addChild(m_draggingBg);
     this->addChild(menu);
 
     return true;
 }
 
 void PackNode::onView(CCObject*) {
-    PackInfoPopup::create(m_pack)->show();
+    auto popup = InfoPopup::create(m_pack);
+    if (popup) {
+        popup->show();
+    }
 }
 
 PackNode* PackNode::create(
-    PackSelectPopup* layer,
+    geode::Popup<>* layer,
     const std::shared_ptr<Pack>& pack,
     float width
 ) {
     auto ret = new PackNode;
-    if (ret->init(layer, pack, width)) {
+    if (ret && ret->init(layer, pack, width)) {
         ret->autorelease();
         return ret;
     }

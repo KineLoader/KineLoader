@@ -10,26 +10,24 @@ Result<PackInfo> PackInfo::from(matjson::Value const& json) {
     auto copyJson = json;
     auto root = checkJson(copyJson, "[pack.json]");
 
-    auto target = root.needs("textureldr").get<VersionInfo>();
+    auto target = root.needs("kineloader").get<VersionInfo>();
 
     GEODE_UNWRAP(root.ok());
 
     auto current = Mod::get()->getVersion();
     if (target > VersionInfo(current.getMajor(), current.getMinor(), 99999999)) {
-        return Err("Pack targets newer version of TextureLdr");
+        return Err("Pack targets newer version of kineloader");
     }
-    info.m_textureldr = target;
+    info.m_kineloader = target;
     root.needs("name").into(info.m_name);
     root.needs("id").into(info.m_id);
     root.needs("version").into(info.m_version);
 
-    // has single "author" key?
     if (auto author = root.has("author")) {
         std::string temp;
         author.into(temp);
         info.m_authors = { temp };
     }
-    // otherwise use "authors" key
     else {
         root.needs("authors").into(info.m_authors);
     }
@@ -94,7 +92,6 @@ Result<> Pack::setup() {
     if (optPath) {
         m_resourcesPath = *optPath;
     }
-    // TODO: read this from the zip before extracting.. somehow
     if (std::filesystem::exists(m_resourcesPath / "pack.json")) {
         GEODE_UNWRAP(this->parsePackJson());
     }
@@ -102,11 +99,9 @@ Result<> Pack::setup() {
 }
 
 Result<> Pack::extract() {
-    // this method is only for zips and stuff
     if (std::filesystem::is_directory(m_path)) return Ok();
 
     auto const fileExt = m_path.extension().string();
-    // TODO: we dont support rar, lol
     if (fileExt != ".zip" && fileExt != ".apk") {
         return Err("Expected zip or apk");
     }
@@ -151,15 +146,12 @@ Result<> Pack::extract() {
 }
 
 std::optional<std::filesystem::path> Pack::findResourcesPath(std::filesystem::path targetPath) {
-    // Packs are often distributed in weird ways, this code tries to find where the resources actually are..
 
     if (m_path.extension().string() == ".apk") {
-        // resources can only be in one place! very easy
         return m_unzippedPath / "assets";
     }
 
     if (std::filesystem::exists(targetPath / "pack.json") || std::filesystem::exists(targetPath / "pack.png")) {
-        // this pack is made for texture loader, so it should be correct already
         return targetPath;
     }
 
@@ -168,7 +160,6 @@ std::optional<std::filesystem::path> Pack::findResourcesPath(std::filesystem::pa
     };
 
     if (existsDir(targetPath / "Resources")) {
-        // its probably there, i hope
         return targetPath / "Resources";
     }
 
@@ -176,8 +167,6 @@ std::optional<std::filesystem::path> Pack::findResourcesPath(std::filesystem::pa
     if (existsDir(targetPath / "icons")) {
         return targetPath;
     }
-
-    // Look for any plist files, or png files ending in -uhd -hd or starting in GJ_
 
     for (auto const& file : std::filesystem::directory_iterator(targetPath, std::filesystem::directory_options::skip_permission_denied)) {
         if (!file.is_regular_file()) continue;
@@ -197,14 +186,11 @@ std::optional<std::filesystem::path> Pack::findResourcesPath(std::filesystem::pa
         }
     }
 
-    // ok, look recursively through the folders then
     for (auto const& dir : std::filesystem::directory_iterator(targetPath, std::filesystem::directory_options::skip_permission_denied)) {
         if (!dir.is_directory()) continue;
 
         auto const path = dir.path();
 
-        // TODO: this might skip over texture packs that set geode mod textures..
-        // though, they should be using pack.json or pack.png anyways!
         auto const opt = this->findResourcesPath(path);
         if (opt) {
             return *opt;
