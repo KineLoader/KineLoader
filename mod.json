@@ -13,7 +13,7 @@
 	"description": "Manager Texture Packs.",
 	"early-load": true,
 	"links": {
-        "homepage": "https://github.cp,/KineLoader",
+        "homepage": "https://github.com/KineLoader",
         "source": "https://github.com/KineLoader/KineLoader"
     },
 	"resources": {
