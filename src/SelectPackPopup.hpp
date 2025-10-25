@@ -46,7 +46,6 @@ public:
     void onApply(CCObject*);
 
     void onOpenFolder(CCObject*);
-    void onDownloadPacks(CCObject*);
     void onReloadPacks(CCObject*);
 
     void startDragging(PackNode* node);
