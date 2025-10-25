@@ -2,4 +2,4 @@
 - Back :3
 
 ## 1.0.0
-- Frist
+- Initial Release
