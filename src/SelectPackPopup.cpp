@@ -9,7 +9,6 @@
 #include "PackManager.hpp"
 #include "PackNode.hpp"
 #include "BoundedScrollLayer.hpp"
-#include "PacksIndexPopup.hpp"
 
 static bool s_openSelectPackPopup = false;
 class $modify(ReloadMenuLayer, MenuLayer) {
@@ -84,14 +83,6 @@ bool SelectPackPopup::init() {
     float distanceFromCenter = 105.f;
     float heightOffset = -5.f;
     float scale = .88f;
-
-    auto downloadBtn = CCMenuItemSpriteExtra::create(
-        CCSprite::createWithSpriteFrameName("GJ_downloadBtn_001.png"),
-        this, menu_selector(SelectPackPopup::onDownloadPacks)
-    );
-    downloadBtn->setID("download-button");
-    downloadBtn->setPosition({size.width - 70, 27});
-    m_buttonMenu->addChild(downloadBtn);
 
     auto availableTitle = CCLabelBMFont::create("Available", "bigFont.fnt");
     availableTitle->setPosition(
@@ -197,10 +188,6 @@ void SelectPackPopup::onApply(CCObject*) {
 
 void SelectPackPopup::onOpenFolder(CCObject*) {
     utils::file::openFolder(PackManager::get()->getPackDir());
-}
-
-void SelectPackPopup::onDownloadPacks(CCObject*) {
-    FLAlertLayer::create("KineLoader", "Sorry packs index under development!", "OK")->show();
 }
 
 void SelectPackPopup::onReloadPacks(CCObject*) {
