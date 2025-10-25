@@ -17,14 +17,9 @@
         "source": "https://github.com/KineLoader/KineLoader"
     },
 	"resources": {
-		"spritesheets": {
-			"interfaceSheet": [
-				"resources/interfaceSheet/*.png"
-			],
-			"GJ_GameSheet03": [
-				"resources/GJ_GameSheet03/*.png"
-			]
-		}
+		"sprites": [
+			"resources/*.png"
+		]
 	},
 	"api": {
 		"include": ["include/*.hpp"]
@@ -35,5 +30,8 @@
             "name": "Transparency of not found icon",
             "type": "bool"
         }
-    }
+    },
+	"dependencies": {
+		"geode.node-ids": "1.20.1"
+	}
 }
